@@ -1,0 +1,79 @@
+#!/usr/bin/perl                                                                           
+
+#write function, that returns if new                                                      
+#write to file                                                                            
+
+
+
+#01:55PM / Vessels / Vertical / Dilate /  /  /  / Bias /  /  /  /  /  /  / 775960         
+
+use File::Path qw(make_path);
+use feature qw(switch);
+use Cwd;
+use File::Copy;
+use File::Compare;
+use Time::HiRes;
+use strict;
+use warnings;
+use Data::Dumper qw(Dumper);
+
+sub return_code {
+
+    my $line = shift;
+    if($line =~ m/(\d\d\d\d\d\d)/){
+        my $code = $1;
+        return $code;
+    }
+
+    return 0;
+
+}
+
+sub play_is_recent {
+    my $line = $_[0];
+    if (index($line, "/ 2015 /")){
+        return 1;
+    }
+	elsif (return_code($line) > 775960){
+        return 1;
+    }
+    else{
+        return 0;
+    }
+}
+
+    open FILE, "spinitron.txt" or die $!;
+    my @artists;
+    my @overall_chart;
+    my $checker = " ";
+    my $num_plays = 1;
+    while (my $line = <FILE>) {
+
+        #check if string is a play                                                        
+        #add                                                                              
+        if(substr($line, 2, 1) =~ ":"){
+            if(play_is_recent == 1){
+            #extract artist name from string                                              
+            my $location = index(substr($line,10,50), " / ");
+            my $artist = substr($line, 10, $location);
+
+            if($checker =~ $artist){
+                $num_plays++;
+
+            }
+            else {
+                $artist = $num_plays . "   " . $artist . "\n";
+                push @artists, $artist;
+                $num_plays = 1;
+                $checker = $artist;
+            }
+            }
+			
+        }
+    }
+
+    close(FILE) or die $!;
+
+@artists = sort @artists;
+@artists = reverse @artists;
+print @artists;
