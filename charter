@@ -1,11 +1,4 @@
-#!/usr/bin/perl                                                                           
-
-#write function, that returns if new                                                      
-#write to file                                                                            
-
-
-
-#01:55PM / Vessels / Vertical / Dilate /  /  /  / Bias /  /  /  /  /  /  / 775960         
+#!/usr/bin/perl
 
 use File::Path qw(make_path);
 use feature qw(switch);
@@ -21,8 +14,8 @@ sub return_code {
 
     my $line = shift;
     if($line =~ m/(\d\d\d\d\d\d)/){
-        my $code = $1;
-        return $code;
+	my $code = $1;
+	return $code;
     }
 
     return 0;
@@ -30,15 +23,18 @@ sub return_code {
 }
 
 sub play_is_recent {
-    my $line = $_[0];
-    if (index($line, "/ 2015 /")){
-        return 1;
+    if(!$_[0]){
+	print "No FilePath Specified!\n";
     }
-	elsif (return_code($line) > 775960){
-        return 1;
+    my $current_line = $_[0];
+    if (index($current_line, "/ 2015 /")){
+	return 1; 
+    }
+    elsif (return_code($current_line) > 775960){
+	return 1;
     }
     else{
-        return 0;
+	return 0;
     }
 }
 
@@ -48,30 +44,30 @@ sub play_is_recent {
     my $checker = " ";
     my $num_plays = 1;
     while (my $line = <FILE>) {
-
-        #check if string is a play                                                        
-        #add                                                                              
-        if(substr($line, 2, 1) =~ ":"){
-            if(play_is_recent == 1){
-            #extract artist name from string                                              
-            my $location = index(substr($line,10,50), " / ");
-            my $artist = substr($line, 10, $location);
-
-            if($checker =~ $artist){
-                $num_plays++;
-
-            }
-            else {
-                $artist = $num_plays . "   " . $artist . "\n";
-                push @artists, $artist;
-                $num_plays = 1;
-                $checker = $artist;
-            }
-            }
-			
-        }
+	
+	#check if string is a play
+	#add
+	if(substr($line, 2, 1) =~ ":"){
+	    if(play_is_recent($line) == 1){
+	    #extract artist name from string
+	    my $location = index(substr($line,10,50), " / ");
+	    my $artist = substr($line, 10, $location);
+	    	    
+	    if($checker =~ $artist){
+		$num_plays++;
+		
+	    }
+	    else {
+		$artist = $num_plays . "   " . $artist . "\n";
+		push @artists, $artist;
+		$num_plays = 1;
+		$checker = $artist;
+	    }
+	    }
+	    
+	}
     }
-
+    
     close(FILE) or die $!;
 
 @artists = sort @artists;
